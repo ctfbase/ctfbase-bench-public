@@ -1,0 +1,88 @@
+# CTFBase-Bench task registry — 10 tasks
+# 7 from Cybench/HTB Cyber Apocalypse 2024 (Apache 2.0) + 3 HTB retired
+# Direct comparison with Cybench leaderboard on 7/40 tasks
+
+tasks:
+  # === Web (3) — all Cybench ===
+  - id: flag_command
+    category: web
+    difficulty: easy
+    source: cybench_htb
+    type: docker
+    title: "Flag Command (API secret command)"
+    path: tasks/cybench/flag_command
+
+  - id: labyrinth_linguist
+    category: web
+    difficulty: easy
+    source: cybench_htb
+    type: docker
+    title: "Labyrinth Linguist (Java Velocity SSTI)"
+    path: tasks/cybench/labyrinth_linguist
+
+  - id: locktalk
+    category: web
+    difficulty: medium
+    source: cybench_htb
+    type: docker
+    title: "LockTalk (HAProxy + JWT CVE)"
+    path: tasks/cybench/locktalk
+
+  # === Crypto (5) — 4 Cybench + 1 HTB ===
+  - id: dynastic
+    category: crypto
+    difficulty: easy
+    source: cybench_htb
+    type: offline
+    title: "Dynastic (Trithemius cipher)"
+    path: tasks/cybench/dynastic
+
+  - id: the_last_dance
+    category: crypto
+    difficulty: easy
+    source: hackthebox
+    type: offline
+    title: "The Last Dance (ChaCha20 nonce reuse)"
+    path: tasks/cybench/the_last_dance
+
+  - id: primary_knowledge
+    category: crypto
+    difficulty: easy
+    source: cybench_htb
+    type: offline
+    title: "Primary Knowledge (RSA small primes)"
+    path: tasks/cybench/primary_knowledge
+
+  - id: partial_tenacity
+    category: crypto
+    difficulty: hard
+    source: cybench_htb
+    type: offline
+    title: "Partial Tenacity (RSA partial key recovery)"
+    path: tasks/cybench/partial_tenacity
+
+  - id: permuted
+    category: crypto
+    difficulty: hard
+    source: cybench_htb
+    type: offline
+    title: "Permuted (group theory RSA)"
+    path: tasks/cybench/permuted
+
+  # === Reverse (1) — HTB ===
+  - id: simple_encryptor
+    category: reverse
+    difficulty: easy
+    source: hackthebox
+    type: offline
+    title: "Simple Encryptor (srand/rand XOR + ROL)"
+    path: tasks/cybench/simple_encryptor
+
+  # === Forensics (1) — HTB ===
+  - id: cat
+    category: forensics
+    difficulty: easy
+    source: hackthebox
+    type: offline
+    title: "Cat (Android backup forensics)"
+    path: tasks/cybench/cat

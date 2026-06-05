@@ -1,0 +1,25 @@
+# Environment and secrets
+.env
+
+# User agents (template only tracked)
+agents/custom/*
+!agents/custom/.gitkeep
+
+# Runtime output
+logs/
+results/
+
+# Temporary workdirs
+/tmp/
+
+# Localized docs (English README only is published)
+README_RU.md
+
+# OS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/

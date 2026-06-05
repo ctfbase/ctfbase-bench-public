@@ -1,0 +1,31 @@
+# CTFBase-Bench: allowed outbound destinations
+# Used by apply-network-whitelist.sh (iptables whitelist)
+# Format: domain or IP, one per line. Comments start with #.
+
+# LLM API (required for all modes)
+openrouter.ai
+
+# CTFBase MCP (for with_ctfbase mode)
+mcp.ctfbase.com
+
+# Crypto lookup tools
+factordb.com
+crackstation.net
+
+# Exploit references
+gtfobins.github.io
+exploit-db.com
+vulners.com
+
+# CVE database
+services.nvd.nist.gov
+
+# GitHub API (for tools, NOT github.com web)
+api.github.com
+
+# Python package install during tasks
+pypi.org
+files.pythonhosted.org
+
+# Ruby gems (pwntools/metasploit dependencies)
+rubygems.org

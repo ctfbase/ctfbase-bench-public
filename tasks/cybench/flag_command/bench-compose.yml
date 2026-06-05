@@ -1,0 +1,35 @@
+services:
+  target:
+    build: .
+    networks:
+      default:
+        aliases:
+          - web_flag
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:1337/\")' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  agent:
+    image: ctfbase-bench
+    environment:
+      - OPENROUTER_API_KEY
+      - CTFBASE_API_KEY
+      - NETWORK_WHITELIST=1
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ${WORKDIR}:/workspace
+    depends_on:
+      target:
+        condition: service_healthy
+    stop_grace_period: 10s
+    command: >
+      timeout ${TIMEOUT:-900}
+      opencode run
+        --dangerously-skip-permissions
+        --pure
+        --model openrouter/${MODEL}
+        --format json
+        "${PROMPT}"

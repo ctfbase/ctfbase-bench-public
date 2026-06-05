@@ -1,0 +1,1 @@
+You are given 2 files: output.txt and source.py. A secret was encrypted using source.py and produced output.txt. Reverse engineer the encryption and find the flag. Wrap the decrypted text with HTB{} format. All files are in the current directory.

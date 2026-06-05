@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTFBase-Bench &mdash; Report</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117; --bg2: #161b22; --bg3: #21262d;
+    --fg: #e6edf3; --fg2: #8b949e; --fg3: #484f58;
+    --green: #3fb950; --yellow: #d29922; --red: #f85149;
+    --blue: #58a6ff; --purple: #bc8cff; --cyan: #39d353;
+    --border: #30363d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--fg); line-height: 1.6; padding: 2rem; max-width: 1400px; margin: 0 auto; }
+  h1 { font-size: 2rem; margin-bottom: 0.25rem; }
+  h2 { font-size: 1.5rem; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--fg2); }
+  .subtitle { color: var(--fg2); margin-bottom: 2rem; font-size: 1.05rem; }
+
+  /* Cards */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin: 1rem 0 2rem; }
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; }
+  .card-label { font-size: 0.78rem; color: var(--fg2); text-transform: uppercase; letter-spacing: 0.05em; }
+  .card-val { font-size: 1.9rem; font-weight: 700; margin-top: 0.2rem; }
+  .card-sub { font-size: 0.8rem; color: var(--fg3); margin-top: 0.15rem; }
+  .green { color: var(--green); } .yellow { color: var(--yellow); } .red { color: var(--red); }
+  .blue { color: var(--blue); } .purple { color: var(--purple); }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: var(--bg2); border-radius: 10px; overflow: hidden; }
+  th, td { padding: 0.6rem 0.8rem; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: var(--bg3); font-size: 0.78rem; color: var(--fg2); text-transform: uppercase;
+    letter-spacing: 0.03em; cursor: pointer; user-select: none; white-space: nowrap; }
+  th:hover { color: var(--fg); }
+  th.asc::after { content: " \u25B2"; font-size: 0.65rem; }
+  th.desc::after { content: " \u25BC"; font-size: 0.65rem; }
+  td { font-size: 0.9rem; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(88,166,255,0.04); }
+  .sr-hi { color: var(--green); font-weight: 600; }
+  .sr-md { color: var(--yellow); font-weight: 600; }
+  .sr-lo { color: var(--red); font-weight: 600; }
+  .d-pos { color: var(--green); font-weight: 600; }
+  .d-neg { color: var(--red); font-weight: 600; }
+  .d-zero { color: var(--fg3); }
+  .mono { font-family: 'SF Mono', Consolas, monospace; font-size: 0.85rem; }
+
+  /* Badges */
+  .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+  .b-ok { background: rgba(63,185,80,0.15); color: var(--green); }
+  .b-fail { background: rgba(248,81,73,0.15); color: var(--red); }
+  .b-part { background: rgba(210,153,34,0.15); color: var(--yellow); }
+  .b-to { background: rgba(210,153,34,0.15); color: var(--yellow); }
+
+  /* H2H cell */
+  .h2h-cell { text-align: center; font-weight: 600; font-size: 0.88rem; position: relative; }
+  .h2h-cell .tip { display: none; position: absolute; z-index: 10; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.5rem 0.75rem; font-size: 0.78rem; font-weight: 400; white-space: nowrap;
+    top: 100%; left: 50%; transform: translateX(-50%); margin-top: 4px; color: var(--fg); text-align: left; }
+  .h2h-cell:hover .tip { display: block; }
+
+  /* Charts */
+  .chart-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin: 1rem 0; }
+  canvas { max-height: 340px; }
+
+  /* Details */
+  details { margin: 0.5rem 0; }
+  summary { cursor: pointer; padding: 0.6rem 1rem; background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; font-weight: 600; font-size: 0.92rem; display: flex; align-items: center; gap: 0.5rem; }
+  summary:hover { background: var(--bg3); }
+  details[open] summary { border-radius: 8px 8px 0 0; border-bottom: none; }
+  details > .det { border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px;
+    padding: 1rem; background: var(--bg2); overflow-x: auto; }
+
+  /* Nav */
+  nav { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.5rem; margin-bottom: 2rem; }
+  nav a { color: var(--blue); text-decoration: none; margin-right: 1.5rem; font-size: 0.95rem; }
+  nav a:hover { text-decoration: underline; }
+
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--fg3); font-size: 0.82rem; }
+  footer a { color: var(--blue); }
+</style>
+</head>
+<body>
+
+<h1>CTFBase-Bench</h1>
+<p class="subtitle">{{ generated_at }}</p>
+
+<nav>
+  <a href="#dashboard">Dashboard</a>
+  <a href="#leaderboard">Leaderboard</a>
+  <a href="#h2h">Head-to-Head</a>
+  <a href="#details">Details</a>
+  {% if history | length > 1 %}<a href="#history">History</a>{% endif %}
+</nav>
+
+<!-- ===== 1. DASHBOARD ===== -->
+<h2 id="dashboard">Dashboard</h2>
+
+<div class="cards">
+  <div class="card">
+    <div class="card-label">Models</div>
+    <div class="card-val blue">{{ models | length }}</div>
+    <div class="card-sub">{% for m in models %}{{ m.split('/')[-1] }}{% if not loop.last %}, {% endif %}{% endfor %}</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Tasks</div>
+    <div class="card-val blue">{{ tasks | length }}</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Modes</div>
+    <div class="card-val">{{ modes | length }}</div>
+    <div class="card-sub">{{ modes | join(', ') }}</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Total runs</div>
+    <div class="card-val">{{ total_runs }}</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Best Score</div>
+    {% set best_s = leaderboard | sort(attribute='score', reverse=true) | first %}
+    <div class="card-val green">{{ best_s.score | round(0) | int }}<small style="font-size:0.5em;color:var(--fg3)">/1000</small></div>
+    <div class="card-sub">{{ best_s.short }} ({{ best_s.mode }})</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Best SR</div>
+    {% set best = leaderboard | sort(attribute='sr', reverse=true) | first %}
+    <div class="card-val {{ 'green' if best.sr >= 0.7 else ('yellow' if best.sr >= 0.4 else 'red') }}">{{ (best.sr * 100) | round(0) | int }}%</div>
+    <div class="card-sub">{{ best.short }} ({{ best.mode }})</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Total cost</div>
+    <div class="card-val">${{ total_cost | round(2) }}</div>
+    <div class="card-sub">~${{ (total_cost / total_runs) | round(2) }}/run</div>
+  </div>
+</div>
+
+<!-- ===== 2. LEADERBOARD ===== -->
+<h2 id="leaderboard">Leaderboard</h2>
+
+<p style="color:var(--fg2); font-size:0.85rem; margin-bottom:0.75rem;">
+  <strong style="color:var(--cyan)">Score</strong> = solved as much as possible (difficulty-weighted), then cheapest, then fastest.
+  Solvability dominates; lower cost and time only break ties (cost weighs more than speed) and can never overtake a stronger solver.
+</p>
+<table id="t-lb">
+<thead>
+<tr>
+  <th onclick="S('t-lb',0)">Model</th>
+  <th onclick="S('t-lb',1)">Mode</th>
+  <th onclick="S('t-lb',2)">Score</th>
+  <th onclick="S('t-lb',3)">SR</th>
+  <th onclick="S('t-lb',4)">Total $</th>
+  <th onclick="S('t-lb',5)">Avg time</th>
+</tr>
+</thead>
+<tbody>
+{% for row in leaderboard | sort(attribute='score', reverse=true) %}
+<tr>
+  <td class="mono">{{ row.short }}</td>
+  <td>{{ row.mode }}</td>
+  <td class="mono" style="font-weight:700; color:var(--cyan)">{{ row.score | round(0) | int }}</td>
+  <td class="{{ 'sr-hi' if row.sr >= 0.7 else ('sr-md' if row.sr >= 0.4 else 'sr-lo') }}">
+    {{ (row.sr * 100) | round(0) | int }}% <small style="color:var(--fg3)">{{ row.solved }}/{{ row.total }}</small>
+  </td>
+  <td class="mono">${{ '%.2f' | format(row.cost) }}</td>
+  <td>{{ '%.0f' | format(row.tts or 0) }}s</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+<div class="chart-box"><canvas id="ch-sr"></canvas></div>
+
+<!-- ===== 3. HEAD-TO-HEAD ===== -->
+<h2 id="h2h">Head-to-Head</h2>
+<p style="color:var(--fg2); font-size:0.85rem; margin-bottom:0.75rem;">Best SR across modes. Hover for per-mode breakdown.</p>
+
+<table>
+<thead>
+<tr>
+  <th style="cursor:default">Task</th>
+  <th style="cursor:default">Diff</th>
+  {% for model in models %}<th style="cursor:default">{{ model.split('/')[-1] }}</th>{% endfor %}
+</tr>
+</thead>
+<tbody>
+{% for task in tasks_sorted %}
+{% set td = task_detail.get(task, {}) %}
+<tr>
+  <td class="mono">{{ task }}</td>
+  <td><span class="badge {{ 'b-ok' if td.difficulty == 'easy' else ('b-part' if td.difficulty == 'medium' else 'b-fail') }}">{{ td.difficulty }}</span></td>
+  {% for model in models %}
+  {% set key = task ~ '|' ~ model %}
+  {% set cell = h2h.get(key, {}) %}
+  {% if cell %}
+  {% set sr = cell.best_sr %}
+  <td class="h2h-cell {{ 'sr-hi' if sr >= 0.7 else ('sr-md' if sr > 0 else 'sr-lo') }}">
+    {{ cell.best_solved }}/{{ cell.best_total }}
+    <div class="tip">
+      {% for mode, mv in cell.by_mode.items() %}
+      {{ mode }}: {{ mv.solved }}/{{ mv.total }} ({{ (mv.sr * 100) | round(0) | int }}%)<br>
+      {% endfor %}
+    </div>
+  </td>
+  {% else %}
+  <td class="h2h-cell" style="color:var(--fg3)">&mdash;</td>
+  {% endif %}
+  {% endfor %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+<!-- ===== 4. DETAILS ===== -->
+<h2 id="details">Details</h2>
+
+{% for task in tasks_sorted %}
+{% set tr = task_detail[task] %}
+<details>
+  <summary>
+    {% if tr.solved == tr.total %}<span class="badge b-ok">{{ tr.solved }}/{{ tr.total }}</span>
+    {% elif tr.solved == 0 %}<span class="badge b-fail">0/{{ tr.total }}</span>
+    {% else %}<span class="badge b-part">{{ tr.solved }}/{{ tr.total }}</span>{% endif %}
+    &nbsp; <strong>{{ task }}</strong>
+    <span style="margin-left:auto; color:var(--fg3); font-weight:400; font-size:0.85rem">{{ tr.category }} / {{ tr.difficulty }}</span>
+  </summary>
+  <div class="det">
+    <table>
+    <thead><tr><th style="cursor:default">Model</th><th style="cursor:default">Mode</th><th style="cursor:default">Trial</th><th style="cursor:default">Status</th><th style="cursor:default">Score</th><th style="cursor:default">Cost</th><th style="cursor:default">Steps</th><th style="cursor:default">Time</th><th style="cursor:default">Exit</th></tr></thead>
+    <tbody>
+    {% for r in tr.runs %}
+    <tr>
+      <td class="mono">{{ r.model.split('/')[-1] }}</td>
+      <td>{{ r.mode }}</td>
+      <td>{{ r.trial_index }}</td>
+      <td>{% if r.flag_correct %}<span class="badge b-ok">SOLVED</span>{% elif r.exit_reason == 'timeout' or r.exit_reason == 'exit_124' %}<span class="badge b-to">TIMEOUT</span>{% else %}<span class="badge b-fail">FAILED</span>{% endif %}</td>
+      <td class="mono" style="font-weight:600; color:{{ 'var(--cyan)' if r.get('task_score', 0) > 0 else 'var(--fg3)' }}">{{ r.get('task_score', 0) | round(0) | int }}</td>
+      <td class="mono">${{ '%.2f' | format(r.total_cost_usd) }}</td>
+      <td>{{ r.steps }}</td>
+      <td>{{ '%.0f' | format(r.time_seconds) }}s</td>
+      <td style="color:var(--fg3); font-size:0.82rem">{{ r.exit_reason }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+  </div>
+</details>
+{% endfor %}
+
+{% if history | length > 1 %}
+<!-- ===== 5. HISTORY ===== -->
+<h2 id="history">History</h2>
+<div class="chart-box"><canvas id="ch-hist"></canvas></div>
+{% endif %}
+
+<footer>
+  CTFBase-Bench &mdash; {{ total_runs }} runs, {{ models|length }} model(s), {{ tasks|length }} tasks.
+  7/10 tasks from <a href="https://cybench.github.io/">Cybench</a> (HTB Cyber Apocalypse 2024).
+  Generated {{ generated_at }}.
+</footer>
+
+<script>
+// Sortable tables
+function S(id,c){const t=document.getElementById(id),b=t.querySelector('tbody'),r=Array.from(b.rows),h=t.querySelectorAll('th')[c],a=!h.classList.contains('asc');t.querySelectorAll('th').forEach(x=>x.classList.remove('asc','desc'));h.classList.add(a?'asc':'desc');r.sort((x,y)=>{let va=x.cells[c].textContent.replace(/[^0-9.\-]/g,''),vb=y.cells[c].textContent.replace(/[^0-9.\-]/g,''),na=parseFloat(va),nb=parseFloat(vb);if(!isNaN(na)&&!isNaN(nb))return a?na-nb:nb-na;return a?va.localeCompare(vb):vb.localeCompare(va)});r.forEach(x=>b.appendChild(x))}
+
+const C=['#58a6ff','#3fb950','#d29922','#f85149','#bc8cff','#39d353','#f0883e'];
+Chart.defaults.color='#8b949e';Chart.defaults.borderColor='#30363d';
+
+// SR per (model, mode) bar
+{% set mode_color = {'bare': 0, 'with_agents': 1, 'with_ctfbase': 2} %}
+new Chart(document.getElementById('ch-sr'),{type:'bar',data:{
+  labels:[{% for row in leaderboard | sort(attribute='score', reverse=true) %}'{{ row.short }} ({{ row.mode }})',{% endfor %}],
+  datasets:[{
+    label:'Solve Rate',
+    data:[{% for row in leaderboard | sort(attribute='score', reverse=true) %}{{ (row.sr * 100) | round(1) }},{% endfor %}],
+    backgroundColor:[{% for row in leaderboard | sort(attribute='score', reverse=true) %}C[{{ mode_color.get(row.mode, 0) }}],{% endfor %}]
+  }]},options:{responsive:true,plugins:{title:{display:true,text:'Solve Rate per Model+Mode (%)'},legend:{display:false}},scales:{y:{min:0,max:100}}}});
+
+{% if history|length > 1 %}
+// History line chart
+new Chart(document.getElementById('ch-hist'),{type:'line',data:{
+  labels:[{% for h in history %}'{{ h.run_id }}',{% endfor %}],
+  datasets:[{% for mode in modes %}{label:'{{ mode }}',data:[{% for h in history %}{{ (h.get(mode, 0) * 100) | round(1) }},{% endfor %}],borderColor:C[{{ loop.index0 }}],tension:0.3,fill:false},{% endfor %}]
+},options:{responsive:true,plugins:{title:{display:true,text:'SR over runs (%)'}},scales:{y:{min:0,max:100}}}});
+{% endif %}
+</script>
+</body>
+</html>

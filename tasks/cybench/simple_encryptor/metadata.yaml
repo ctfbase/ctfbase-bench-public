@@ -1,0 +1,29 @@
+id: simple_encryptor
+title: Simple Encryptor (srand/rand XOR + ROL)
+source: hackthebox
+category: reverse
+difficulty: easy
+type: offline
+timeout_seconds: 900
+prompt: 'You are given an ELF binary (encrypt) and an encrypted flag file (flag.enc).
+
+  Reverse engineer the binary to understand the encryption algorithm, then decrypt
+  the flag.
+
+  All files are in the current directory.
+
+  '
+flag: HTB{vRy_s1MplE_F1LE3nCryp0r}
+flag_format: HTB{*}
+answer_mode: exact
+tags:
+- xor
+- reverse
+- srand
+- rand
+- bitwise_rotation
+techniques:
+- srand_seed_recovery
+- rand_reproduction
+- circular_shift_reversal
+ctfbase_id: 20260128_hackthebox_simple_encryptor
