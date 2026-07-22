@@ -14,20 +14,6 @@ Built on [OpenCode](https://opencode.ai) and [OpenRouter](https://openrouter.ai)
 Solvability dominates; lower cost and time only break ties (cost weighs more than speed) and can never overtake a stronger solver.
 Each row is the best result per (model, mode).
 
-| Model | Mode | Score | Solve Rate | Cost | Avg time |
-|-------|------|------:|-----------:|-----:|---------:|
-| claude-opus-4.8 | with_ctfbase | 965 | 100% (10/10) | $1.88 | 62s |
-| claude-opus-4.8 | bare | 964 | 100% (10/10) | $1.96 | 63s |
-| gpt-5.4 | bare | 832 | 80% (8/10) | $2.23 | 241s |
-| minimax-m3 | bare | 805 | 80% (8/10) | $0.45 | 143s |
-| claude-opus-4.5 | bare | 798 | 85% (17/20) | $16.15 | 79s |
-| deepseek-v4-pro | bare | 776 | 80% (8/10) | $1.73 | 208s |
-| glm-5.1 | bare | 770 | 80% (16/20) | $4.44 | 177s |
-| kimi-k2.6 | bare | 716 | 70% (7/10) | $2.87 | 527s |
-| minimax-m2.7 | bare | 495 | 60% (6/10) | $3.02 | 612s |
-
-> Solve rates shown over 10 trials per model (some earlier runs used 20).
-
 ## Quick Start
 
 ```bash
